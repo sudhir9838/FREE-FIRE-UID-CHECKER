@@ -1,74 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FF UID Lookup</title>
-<style>
-body { font-family: Arial; padding:20px; background:#111; color:white; }
-.box { background:#1a1a1a; padding:20px; border-radius:10px; }
-input { width:100%; padding:12px; margin-bottom:10px; border:none; border-radius:8px; }
-button { width:100%; padding:12px; background:#ff6600; color:white; border:none; border-radius:8px; font-size:18px; }
-#loader { display:none; text-align:center; font-size:18px; }
-#result { margin-top:20px; background:#1f1f1f; padding:15px; border-radius:10px; display:none; }
-</style>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FF UID Checker</title>
+  <style>
+    body{font-family:Arial;background:#07111a;color:#e8f5ff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+    .card{width:360px;background:linear-gradient(180deg,#0f2230,#081522);padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+    h2{margin:0 0 8px 0;font-size:20px;color:#fff}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:inherit;margin-top:8px}
+    button{width:100%;margin-top:12px;padding:12px;border-radius:8px;border:0;background:linear-gradient(90deg,#00c6ff,#007bff);color:#001;border-radius:10px;font-weight:700;cursor:pointer}
+    .loader{display:none;margin:12px auto;text-align:center}
+    .result{display:none;margin-top:12px;background:rgba(0,0,0,0.18);padding:12px;border-radius:8px;color:#dff9ff}
+    .error{display:none;margin-top:12px;background:#ffb4b4;padding:8px;border-radius:8px;color:#2a0000}
+  </style>
 </head>
 <body>
-
-<div class="box">
+  <div class="card">
     <h2>Free Fire UID Checker</h2>
+    <div style="font-size:13px;color:#89bfcf">Enter player UID and check profile</div>
 
-    <input type="number" id="uid" placeholder="Enter FF UID" />
+    <input id="uid" placeholder="UID (e.g. 451012596)" inputmode="numeric" />
+    <select id="region"><option>IND</option><option>BR</option><option>US</option><option>SAC</option><option>NA</option></select>
+    <button id="checkBtn">Check Profile</button>
 
-    <button onclick="checkUID()">Check</button>
+    <div id="loader" class="loader">⏳ Loading your data…</div>
+    <div id="error" class="error"></div>
 
-    <div id="loader">⏳ Loading your data…</div>
-
-    <div id="result"></div>
-</div>
+    <div id="result" class="result">
+      <div><strong>Nickname:</strong> <span id="nick">-</span></div>
+      <div><strong>Level:</strong> <span id="level">-</span></div>
+      <div><strong>Region:</strong> <span id="rgn">-</span></div>
+      <div><strong>Likes:</strong> <span id="likes">-</span></div>
+      <div><strong>Bio:</strong> <span id="bio">-</span></div>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:10px 0">
+      <div><strong>Guild:</strong> <span id="clan">-</span></div>
+      <div><strong>Guild Owner:</strong> <span id="owner">-</span></div>
+    </div>
+  </div>
 
 <script>
-function checkUID() {
-    const uid = document.getElementById("uid").value.trim();
-    if (!uid) return alert("Enter UID");
+const checkBtn = document.getElementById('checkBtn');
+const uidInput = document.getElementById('uid');
+const regionSel = document.getElementById('region');
+const loader = document.getElementById('loader');
+const resultBox = document.getElementById('result');
+const errorBox = document.getElementById('error');
 
-    document.getElementById("loader").style.display = "block";
-    document.getElementById("result").style.display = "none";
-
-    fetch("/api/accinfo?uid=" + uid + "&region=IND")
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("loader").style.display = "none";
-
-        if (data.error) {
-            document.getElementById("result").innerHTML = "❌ " + data.error;
-            document.getElementById("result").style.display = "block";
-            return;
-        }
-
-        const nickname = data.Nickname || "Unknown";
-        const level = data.Level || "N/A";
-        const bio = data.Signature || "N/A";
-        const likes = data.LikeNum || "0";
-        const guild = data.GuildInfo?.GuildName || "No Guild";
-        const owner = data.GuildInfo?.GuildOwnerName || "Unknown";
-
-        document.getElementById("result").innerHTML = `
-            <b>Nickname:</b> ${nickname}<br>
-            <b>Level:</b> ${level}<br>
-            <b>Bio:</b> ${bio}<br>
-            <b>Likes:</b> ${likes}<br><br>
-            <b>Guild:</b> ${guild}<br>
-            <b>Guild Owner:</b> ${owner}
-        `;
-        document.getElementById("result").style.display = "block";
-    })
-    .catch(() => {
-        document.getElementById("loader").style.display = "none";
-        document.getElementById("result").innerHTML = "❌ Fetch Failed!";
-        document.getElementById("result").style.display = "block";
-    });
+function showLoading(on){
+  loader.style.display = on ? 'block' : 'none';
+  resultBox.style.display = 'none';
+  errorBox.style.display = 'none';
 }
-</script>
 
+checkBtn.addEventListener('click', async () => {
+  const uid = (uidInput.value || '').trim();
+  const region = (regionSel.value || 'IND').trim().toUpperCase();
+  if (!uid || !/^\d+$/.test(uid)) { alert('Enter valid numeric UID'); uidInput.focus(); return; }
+
+  showLoading(true);
+  try {
+    const res = await fetch(`/api/accinfo?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
+    const json = await res.json();
+    showLoading(false);
+    if (!res.ok) {
+      errorBox.textContent = json.error || json.message || 'Server error';
+      errorBox.style.display = 'block';
+      return;
+    }
+    const v = json.view || {};
+    document.getElementById('nick').textContent = v.nickname || '-';
+    document.getElementById('level').textContent = v.level || '-';
+    document.getElementById('rgn').textContent = v.region || region;
+    document.getElementById('likes').textContent = v.likes ?? '-';
+    document.getElementById('bio').textContent = v.bio || '-';
+    document.getElementById('clan').textContent = v.clanName || '-';
+    document.getElementById('owner').textContent = v.clanOwner || '-';
+    resultBox.style.display = 'block';
+  } catch (err) {
+    showLoading(false);
+    errorBox.textContent = 'Fetch failed: ' + (err.message || err);
+    errorBox.style.display = 'block';
+  }
+});
+</script>
 </body>
 </html>
