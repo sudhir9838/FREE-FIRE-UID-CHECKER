@@ -6,26 +6,30 @@
   <title>FF UID Checker</title>
   <style>
     body{
-      font-family:Arial;
+      font-family:Arial, sans-serif;
       background:#07111a;
       color:#e8f5ff;
       display:flex;
       align-items:center;
       justify-content:center;
-      height:100vh;
-      margin:0
+      min-height:100vh;
+      margin:0;
+      padding:12px;
+      box-sizing:border-box;
     }
     .card{
-      width:360px;
+      width:100%;
+      max-width:360px;
       background:linear-gradient(180deg,#0f2230,#081522);
       padding:18px;
       border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.6)
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      box-sizing:border-box;
     }
     h2{
       margin:0 0 8px 0;
       font-size:20px;
-      color:#fff
+      color:#fff;
     }
     input,select{
       width:100%;
@@ -34,7 +38,8 @@
       border:1px solid rgba(255,255,255,0.06);
       background:rgba(255,255,255,0.03);
       color:inherit;
-      margin-top:8px
+      margin-top:8px;
+      box-sizing:border-box;
     }
     button{
       width:100%;
@@ -45,12 +50,7 @@
       background:linear-gradient(90deg,#00c6ff,#007bff);
       color:#001;
       font-weight:700;
-      cursor:pointer
-    }
-    .loader{
-      display:none;
-      margin:12px auto;
-      text-align:center
+      cursor:pointer;
     }
     .result{
       display:none;
@@ -58,7 +58,7 @@
       background:rgba(0,0,0,0.18);
       padding:12px;
       border-radius:8px;
-      color:#dff9ff
+      color:#dff9ff;
     }
     .error{
       display:none;
@@ -66,7 +66,101 @@
       background:#ffb4b4;
       padding:8px;
       border-radius:8px;
-      color:#2a0000
+      color:#2a0000;
+    }
+
+    /* Uiverse loader */
+    .loader-overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.5);
+      z-index:998;
+    }
+    .loader-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 180px;
+      height: 180px;
+      font-family: "Inter", sans-serif;
+      font-size: 1.2em;
+      font-weight: 300;
+      color: white;
+      border-radius: 50%;
+      background-color: transparent;
+      user-select: none;
+    }
+    .loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background-color: transparent;
+      animation: loader-rotate 2s linear infinite;
+      z-index: 0;
+    }
+    @keyframes loader-rotate {
+      0% {
+        transform: rotate(90deg);
+        box-shadow:
+          0 10px 20px 0 #fff inset,
+          0 20px 30px 0 #ad5fff inset,
+          0 60px 60px 0 #471eec inset;
+      }
+      50% {
+        transform: rotate(270deg);
+        box-shadow:
+          0 10px 20px 0 #fff inset,
+          0 20px 10px 0 #d60a47 inset,
+          0 40px 60px 0 #311e80 inset;
+      }
+      100% {
+        transform: rotate(450deg);
+        box-shadow:
+          0 10px 20px 0 #fff inset,
+          0 20px 30px 0 #ad5fff inset,
+          0 60px 60px 0 #471eec inset;
+      }
+    }
+    .loader-letter {
+      display: inline-block;
+      opacity: 0.4;
+      transform: translateY(0);
+      animation: loader-letter-anim 2s infinite;
+      z-index: 1;
+      border-radius: 50ch;
+      border: none;
+    }
+    .loader-letter:nth-child(1) { animation-delay: 0s; }
+    .loader-letter:nth-child(2) { animation-delay: 0.1s; }
+    .loader-letter:nth-child(3) { animation-delay: 0.2s; }
+    .loader-letter:nth-child(4) { animation-delay: 0.3s; }
+    .loader-letter:nth-child(5) { animation-delay: 0.4s; }
+    .loader-letter:nth-child(6) { animation-delay: 0.5s; }
+    .loader-letter:nth-child(7) { animation-delay: 0.6s; }
+    .loader-letter:nth-child(8) { animation-delay: 0.7s; }
+    .loader-letter:nth-child(9) { animation-delay: 0.8s; }
+    .loader-letter:nth-child(10){ animation-delay: 0.9s; }
+
+    @keyframes loader-letter-anim {
+      0%,100% {
+        opacity: 0.4;
+        transform: translateY(0);
+      }
+      20% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+      40% {
+        opacity: 0.7;
+        transform: translateY(0);
+      }
     }
 
     /* Watermark bottom-right */
@@ -82,10 +176,12 @@
       border-radius:999px;
       font-size:11px;
       color:#e8f5ff;
-      z-index:999
+      z-index:999;
+      max-width:90vw;
     }
     .watermark span{
-      opacity:0.9
+      opacity:0.9;
+      white-space:nowrap;
     }
     .watermark a{
       display:inline-flex;
@@ -96,11 +192,23 @@
       border-radius:50%;
       overflow:hidden;
       background:#111827;
+      flex-shrink:0;
     }
     .watermark svg{
       width:100%;
       height:100%;
       display:block;
+    }
+
+    @media (max-width:480px){
+      .watermark{
+        font-size:10px;
+        padding:5px 8px;
+      }
+      .watermark a{
+        width:20px;
+        height:20px;
+      }
     }
   </style>
 </head>
@@ -119,7 +227,6 @@
     </select>
     <button id="checkBtn">Check Profile</button>
 
-    <div id="loader" class="loader">⏳ Loading your data…</div>
     <div id="error" class="error"></div>
 
     <div id="result" class="result">
@@ -134,29 +241,38 @@
     </div>
   </div>
 
+  <!-- Loader overlay -->
+  <div id="loaderOverlay" class="loader-overlay">
+    <div class="loader-wrapper">
+      <span class="loader-letter">G</span>
+      <span class="loader-letter">e</span>
+      <span class="loader-letter">n</span>
+      <span class="loader-letter">e</span>
+      <span class="loader-letter">r</span>
+      <span class="loader-letter">a</span>
+      <span class="loader-letter">t</span>
+      <span class="loader-letter">i</span>
+      <span class="loader-letter">n</span>
+      <span class="loader-letter">g</span>
+      <div class="loader"></div>
+    </div>
+  </div>
+
   <!-- Watermark / Branding -->
   <div class="watermark">
     <span>Developed by Unknown Gamer</span>
 
-    <!-- YouTube SVG -->
+    <!-- Proper YouTube play icon (red rounded rect + white triangle) -->
     <a href="https://www.youtube.com/channel/UC_JNgrNT7mtS0pyUNw9Ze1w" target="_blank" rel="noopener noreferrer">
-      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="yt-bg" gradientUnits="userSpaceOnUse" x1="1251.069" y1="1.003" x2="2251.069" y2="2507.468">
-            <stop offset="0" stop-color="#fd5"/>
-            <stop offset="0.1" stop-color="#fd5"/>
-            <stop offset="0.5" stop-color="#ff543e"/>
-            <stop offset="1" stop-color="#c837ab"/>
-          </linearGradient>
-        </defs>
-        <path d="M105 0h302c57.928.155 104.845 47.072 105 104.996V407c-.155 57.926-47.072 104.844-104.996 104.998L105 512C47.074 511.844.156 464.926.002 407.003L0 105C.156 47.072 47.074.155 104.997 0H105z" fill="url(#yt-bg)" />
-        <path d="M307.75 303.16c-12.98 0-23.54-10.55-23.54-23.54 0-12.98 10.56-23.53 23.54-23.53 12.97 0 23.53 10.55 23.53 23.53 0 12.99-10.56 23.54-23.53 23.54zm4.14 38.66c-16.06 16.04-46.85 17.29-55.9 17.29-9.06 0-39.84-1.25-55.89-17.3a6.096 6.096 0 010-8.62c2.38-2.39 6.25-2.39 8.64 0 10.12 10.13 31.78 13.71 47.25 13.71 15.47 0 37.13-3.58 47.28-13.71a6.09 6.09 0 018.63.01c2.38 2.38 2.37 6.24-.01 8.62zm-131.25-62.2c0-12.98 10.56-23.53 23.55-23.53 12.97 0 23.53 10.55 23.53 23.53s-10.56 23.53-23.53 23.53c-12.99 0-23.55-10.55-23.55-23.53zm225.93-23.53c0-18.2-14.76-32.96-32.95-32.96-8.88 0-16.93 3.53-22.86 9.25-22.53-16.26-53.56-26.76-88.12-27.97l15.01-70.62 49.04 10.42c.59 12.48 10.81 22.43 23.42 22.43 13.01 0 23.54-10.54 23.54-23.54s-10.53-23.54-23.54-23.54c-9.24 0-17.16 5.38-21.01 13.14l-54.77-11.64a5.758 5.758 0 00-4.42.82 5.876 5.876 0 00-2.55 3.71L250.6 204.4c-35.09.97-66.62 11.48-89.43 27.91-5.92-5.68-13.93-9.18-22.79-9.18-18.19 0-32.95 14.76-32.95 32.96 0 13.38 8 24.88 19.47 30.04-.51 3.28-.79 6.6-.79 9.97 0 50.69 59.02 91.8 131.81 91.8 72.8 0 131.82-41.11 131.82-91.8 0-3.35-.28-6.66-.77-9.91 11.54-5.13 19.6-16.67 19.6-30.1z" fill="#fff" fill-rule="nonzero"/>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="2" y="4" width="20" height="16" rx="4" ry="4" fill="#FF0000"></rect>
+        <polygon points="10,8 16,12 10,16" fill="#FFFFFF"></polygon>
       </svg>
     </a>
 
-    <!-- WhatsApp SVG -->
+    <!-- WhatsApp SVG (green circle with phone) -->
     <a href="https://chat.whatsapp.com/EnLXapxBiYHEsbF7bLUnTL" target="_blank" rel="noopener noreferrer">
-      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 512 512" aria-hidden="true">
         <defs>
           <linearGradient id="wa-bg" gradientUnits="userSpaceOnUse" x1="11337.28" y1="1518.24" x2="21337.28" y2="-2164.82" gradientTransform="matrix(0.19,0,0,-0.19,0.81,98.89)">
             <stop offset="0" stop-color="#61fd7d"/>
@@ -173,14 +289,12 @@
 const checkBtn = document.getElementById('checkBtn');
 const uidInput = document.getElementById('uid');
 const regionSel = document.getElementById('region');
-const loader = document.getElementById('loader');
 const resultBox = document.getElementById('result');
 const errorBox = document.getElementById('error');
+const loaderOverlay = document.getElementById('loaderOverlay');
 
-function showLoading(on){
-  loader.style.display = on ? 'block' : 'none';
-  resultBox.style.display = 'none';
-  errorBox.style.display = 'none';
+function showLoader(on){
+  loaderOverlay.style.display = on ? 'flex' : 'none';
 }
 
 checkBtn.addEventListener('click', async () => {
@@ -188,11 +302,14 @@ checkBtn.addEventListener('click', async () => {
   const region = (regionSel.value || 'IND').trim().toUpperCase();
   if (!uid || !/^\d+$/.test(uid)) { alert('Enter valid numeric UID'); uidInput.focus(); return; }
 
-  showLoading(true);
+  errorBox.style.display = 'none';
+  resultBox.style.display = 'none';
+  showLoader(true);
+
   try {
     const res = await fetch(`/api/accinfo?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
     const json = await res.json();
-    showLoading(false);
+    showLoader(false);
     if (!res.ok) {
       errorBox.textContent = json.error || json.message || 'Server error';
       errorBox.style.display = 'block';
@@ -208,7 +325,7 @@ checkBtn.addEventListener('click', async () => {
     document.getElementById('owner').textContent = v.clanOwner || '-';
     resultBox.style.display = 'block';
   } catch (err) {
-    showLoading(false);
+    showLoader(false);
     errorBox.textContent = 'Fetch failed: ' + (err.message || err);
     errorBox.style.display = 'block';
   }
