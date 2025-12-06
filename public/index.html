@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FF UID Lookup</title>
+<style>
+body { font-family: Arial; padding:20px; background:#111; color:white; }
+.box { background:#1a1a1a; padding:20px; border-radius:10px; }
+input { width:100%; padding:12px; margin-bottom:10px; border:none; border-radius:8px; }
+button { width:100%; padding:12px; background:#ff6600; color:white; border:none; border-radius:8px; font-size:18px; }
+#loader { display:none; text-align:center; font-size:18px; }
+#result { margin-top:20px; background:#1f1f1f; padding:15px; border-radius:10px; display:none; }
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Free Fire UID Checker</h2>
+
+    <input type="number" id="uid" placeholder="Enter FF UID" />
+
+    <button onclick="checkUID()">Check</button>
+
+    <div id="loader">⏳ Loading your data…</div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+function checkUID() {
+    const uid = document.getElementById("uid").value.trim();
+    if (!uid) return alert("Enter UID");
+
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("result").style.display = "none";
+
+    fetch("/api/accinfo?uid=" + uid + "&region=IND")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("loader").style.display = "none";
+
+        if (data.error) {
+            document.getElementById("result").innerHTML = "❌ " + data.error;
+            document.getElementById("result").style.display = "block";
+            return;
+        }
+
+        const nickname = data.Nickname || "Unknown";
+        const level = data.Level || "N/A";
+        const bio = data.Signature || "N/A";
+        const likes = data.LikeNum || "0";
+        const guild = data.GuildInfo?.GuildName || "No Guild";
+        const owner = data.GuildInfo?.GuildOwnerName || "Unknown";
+
+        document.getElementById("result").innerHTML = `
+            <b>Nickname:</b> ${nickname}<br>
+            <b>Level:</b> ${level}<br>
+            <b>Bio:</b> ${bio}<br>
+            <b>Likes:</b> ${likes}<br><br>
+            <b>Guild:</b> ${guild}<br>
+            <b>Guild Owner:</b> ${owner}
+        `;
+        document.getElementById("result").style.display = "block";
+    })
+    .catch(() => {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("result").innerHTML = "❌ Fetch Failed!";
+        document.getElementById("result").style.display = "block";
+    });
+}
+</script>
+
+</body>
+</html>
