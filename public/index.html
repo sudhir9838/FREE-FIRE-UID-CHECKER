@@ -1,17 +1,107 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FF UID Checker</title>
   <style>
-    body{font-family:Arial;background:#07111a;color:#e8f5ff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
-    .card{width:360px;background:linear-gradient(180deg,#0f2230,#081522);padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-    h2{margin:0 0 8px 0;font-size:20px;color:#fff}
-    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:inherit;margin-top:8px}
-    button{width:100%;margin-top:12px;padding:12px;border-radius:8px;border:0;background:linear-gradient(90deg,#00c6ff,#007bff);color:#001;border-radius:10px;font-weight:700;cursor:pointer}
-    .loader{display:none;margin:12px auto;text-align:center}
-    .result{display:none;margin-top:12px;background:rgba(0,0,0,0.18);padding:12px;border-radius:8px;color:#dff9ff}
-    .error{display:none;margin-top:12px;background:#ffb4b4;padding:8px;border-radius:8px;color:#2a0000}
+    body{
+      font-family:Arial;
+      background:#07111a;
+      color:#e8f5ff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      margin:0
+    }
+    .card{
+      width:360px;
+      background:linear-gradient(180deg,#0f2230,#081522);
+      padding:18px;
+      border-radius:12px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6)
+    }
+    h2{
+      margin:0 0 8px 0;
+      font-size:20px;
+      color:#fff
+    }
+    input,select{
+      width:100%;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.06);
+      background:rgba(255,255,255,0.03);
+      color:inherit;
+      margin-top:8px
+    }
+    button{
+      width:100%;
+      margin-top:12px;
+      padding:12px;
+      border-radius:10px;
+      border:0;
+      background:linear-gradient(90deg,#00c6ff,#007bff);
+      color:#001;
+      font-weight:700;
+      cursor:pointer
+    }
+    .loader{
+      display:none;
+      margin:12px auto;
+      text-align:center
+    }
+    .result{
+      display:none;
+      margin-top:12px;
+      background:rgba(0,0,0,0.18);
+      padding:12px;
+      border-radius:8px;
+      color:#dff9ff
+    }
+    .error{
+      display:none;
+      margin-top:12px;
+      background:#ffb4b4;
+      padding:8px;
+      border-radius:8px;
+      color:#2a0000
+    }
+
+    /* Watermark bottom-right */
+    .watermark{
+      position:fixed;
+      bottom:8px;
+      right:8px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      background:rgba(0,0,0,0.55);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      color:#e8f5ff;
+      z-index:999
+    }
+    .watermark span{
+      opacity:0.9
+    }
+    .watermark a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      overflow:hidden;
+      background:#111827
+    }
+    .watermark img{
+      width:100%;
+      height:100%;
+      object-fit:cover
+    }
   </style>
 </head>
 <body>
@@ -20,7 +110,13 @@
     <div style="font-size:13px;color:#89bfcf">Enter player UID and check profile</div>
 
     <input id="uid" placeholder="UID (e.g. 451012596)" inputmode="numeric" />
-    <select id="region"><option>IND</option><option>BR</option><option>US</option><option>SAC</option><option>NA</option></select>
+    <select id="region">
+      <option>IND</option>
+      <option>BR</option>
+      <option>US</option>
+      <option>SAC</option>
+      <option>NA</option>
+    </select>
     <button id="checkBtn">Check Profile</button>
 
     <div id="loader" class="loader">⏳ Loading your data…</div>
@@ -36,6 +132,21 @@
       <div><strong>Guild:</strong> <span id="clan">-</span></div>
       <div><strong>Guild Owner:</strong> <span id="owner">-</span></div>
     </div>
+  </div>
+
+  <!-- Watermark / Branding -->
+  <div class="watermark">
+    <span>Developed by Unknown Gamer</span>
+
+    <!-- YouTube logo -->
+    <a href="https://www.youtube.com/channel/UC_JNgrNT7mtS0pyUNw9Ze1w" target="_blank" rel="noopener noreferrer">
+      <img src="YOUTUBE_LOGO_IMAGE_PATH" alt="YouTube">
+    </a>
+
+    <!-- WhatsApp logo -->
+    <a href="https://chat.whatsapp.com/EnLXapxBiYHEsbF7bLUnTL" target="_blank" rel="noopener noreferrer">
+      <img src="WHATSAPP_LOGO_IMAGE_PATH" alt="WhatsApp">
+    </a>
   </div>
 
 <script>
